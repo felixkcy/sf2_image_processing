@@ -1,10 +1,11 @@
-function [quantized_error] = DPCM_encoder(img, levels)
+function [error_mat] = DPCM_encoder(img, levels)
 % Perform Differential Pulse Code Modulation encoding
 
 N = size(img,1);
 
 predictor = zeros(N);
 quantized_error = zeros(N);
+error_mat = zeros(N);
 
 % We read the image row1, column1, row2, column2, row3, ... because the
 % predictor uses the adjacent elements in the previous row and column
@@ -22,8 +23,10 @@ for i=1:N
         end
         
         error = img(i,j) - predicted;
-        quantized_error(i,j) = quantize_error(error,levels);
-        predictor(i,j) = predicted + quantized_error(i,j);
+        error_mat(i,j) = error; 
+        predictor(i,j) = predicted + error_mat(i,j);
+%         quantized_error(i,j) = quantize_error(error,levels); % AKIL edit
+%         predictor(i,j) = predicted + quantized_error(i,j); % AKIL edit
     end
     
     % Read column i
@@ -35,8 +38,10 @@ for i=1:N
         end
         
         error = img(j,i) - predicted;
-        quantized_error(j,i) = quantize_error(error,levels);
-        predictor(j,i) = predicted + quantized_error(j,i);
+        error_mat(j,i) = error;
+        predictor(j,i) = predicted + error_mat(j,i);
+%         quantized_error(j,i) = quantize_error(error,levels); % AKIL edit
+%         predictor(j,i) = predicted + quantized_error(j,i); % AKIL edit
     end
 end
 
